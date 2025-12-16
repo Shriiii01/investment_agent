@@ -11,6 +11,8 @@ A powerful Streamlit-based investment analysis tool that uses AI to compare stoc
 
 ## Installation
 
+### Quick Start
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/Shriiii01/investment_agent.git
@@ -22,9 +24,22 @@ cd investment_agent
 pip install -r requirements.txt
 ```
 
+Or use the setup script:
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
 3. Run the application:
 ```bash
 streamlit run agent.py
+```
+
+Or use the Makefile:
+```bash
+make install  # Install dependencies
+make run      # Run the application
+make test     # Run tests
 ```
 
 ## Usage
