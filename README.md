@@ -39,7 +39,22 @@ streamlit run agent.py
 - OpenAI API key
 - Internet connection for fetching stock data
 
+## Features in Detail
+
+- **Real-time Stock Data**: Fetches live stock prices and data using YFinance
+- **AI Analysis**: Leverages GPT-4o for intelligent stock analysis
+- **Side-by-Side Comparison**: Compare two stocks simultaneously
+- **Detailed Reports**: Get comprehensive reports with recommendations
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes and updates.
+
 ## License
 
-MIT License
+MIT License - see [LICENSE](LICENSE) file for details.
 
