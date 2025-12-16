@@ -38,7 +38,8 @@ ENV/
 .env.local
 
 # Streamlit
-.streamlit/
+.streamlit/*
+!.streamlit/config.toml
 
 # OS
 .DS_Store
