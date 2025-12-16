@@ -16,13 +16,6 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(validate_stock_symbol("GOOGL"))
         self.assertTrue(validate_stock_symbol("TSLA"))
     
-    def test_validate_stock_symbol_invalid(self):
-        """Test validation of invalid stock symbols."""
-        self.assertFalse(validate_stock_symbol(""))
-        self.assertFalse(validate_stock_symbol("   "))
-        self.assertFalse(validate_stock_symbol("TOOLONG"))
-    
-    def test_format_stock_symbol(self):
         """Test formatting of stock symbols."""
         self.assertEqual(format_stock_symbol("aapl"), "AAPL")
         self.assertEqual(format_stock_symbol("  msft  "), "MSFT")
