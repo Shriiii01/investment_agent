@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -20,11 +23,12 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
+# Application specific
+logs/
+cache/
+data/
+exports/
+*.log
 
 # IDE
 .vscode/
@@ -32,7 +36,10 @@ env/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
+Thumbs.db
 
 # Streamlit
 .streamlit/
@@ -40,32 +47,3 @@ env/
 # Environment variables
 .env
 .env.local
-
-# API Keys (if stored locally)
-*.key
-api_keys.txt
-
-# Logs
-*.log
-logs/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# OS
-.DS_Store
-Thumbs.db
-

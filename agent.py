@@ -10,6 +10,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 from utils import validate_stock_symbol, format_currency, calculate_percentage_change
 from config import DEFAULT_MODEL, DEFAULT_ANALYSIS_DAYS
+from logger import logger
+from persistence import save_analysis_history, load_analysis_history, get_history_stats
+from export import export_analysis_history, export_comparison_table, get_export_list
+from error_handler import get_user_friendly_error_message, safe_execute
+from performance import PerformanceTimer, get_performance_stats
 
 # Page configuration
 st.set_page_config(
@@ -46,9 +51,13 @@ st.markdown("""
 
 # Initialize session state
 if 'analysis_history' not in st.session_state:
-    st.session_state.analysis_history = []
+    # Load history from persistence
+    st.session_state.analysis_history = load_analysis_history()
+    logger.info(f"Loaded {len(st.session_state.analysis_history)} analysis history entries")
 if 'api_key_set' not in st.session_state:
     st.session_state.api_key_set = False
+if 'performance_stats' not in st.session_state:
+    st.session_state.performance_stats = {}
 
 # Sidebar for configuration
 with st.sidebar:
@@ -92,6 +101,27 @@ with st.sidebar:
                     st.session_state.selected_analysis = analysis
     else:
         st.info("No analysis history yet")
+    
+    st.divider()
+    
+    # Export and management options
+    st.subheader("💾 Export & Management")
+    if st.button("📥 Export History", use_container_width=True):
+        try:
+            export_path = export_analysis_history(st.session_state.analysis_history, format="json")
+            st.success(f"✅ History exported to: {export_path}")
+        except Exception as e:
+            st.error(f"Export failed: {get_user_friendly_error_message(e)}")
+    
+    if st.button("🗑️ Clear Cache", use_container_width=True):
+        from cache import clear_cache
+        cleared = clear_cache()
+        st.success(f"✅ Cleared {cleared} cache files")
+    
+    # Performance stats
+    if st.checkbox("Show Performance Stats"):
+        stats = get_performance_stats()
+        st.json(stats)
 
 # Main content
 st.markdown('<div class="main-header">AI Investment Agent 📈🤖</div>', unsafe_allow_html=True)
@@ -217,9 +247,14 @@ else:
                         }
                         st.session_state.analysis_history.append(analysis_entry)
                         
+                        # Persist to file
+                        save_analysis_history(st.session_state.analysis_history)
+                        logger.info(f"Analysis saved: {stock1} vs {stock2}")
+                        
                     except Exception as e:
-                        st.error(f"Error during analysis: {str(e)}")
-                        st.exception(e)
+                        error_msg = get_user_friendly_error_message(e)
+                        st.error(f"Error during analysis: {error_msg}")
+                        logger.error(f"Analysis error: {e}", exc_info=True)
             
             with tab2:
                 st.subheader("📈 Price Comparison Charts")
@@ -311,11 +346,12 @@ else:
             with tab3:
                 st.subheader("📊 Fundamental Analysis")
                 try:
-                    ticker1 = yf.Ticker(stock1)
-                    ticker2 = yf.Ticker(stock2)
-                    
-                    info1 = ticker1.info
-                    info2 = ticker2.info
+                    with PerformanceTimer("fundamental_analysis"):
+                        ticker1 = yf.Ticker(stock1)
+                        ticker2 = yf.Ticker(stock2)
+                        
+                        info1 = ticker1.info
+                        info2 = ticker2.info
                     
                     # Create comparison table
                     comparison_data = {
@@ -360,8 +396,20 @@ else:
                     df_comparison = pd.DataFrame(comparison_data)
                     st.dataframe(df_comparison, use_container_width=True, hide_index=True)
                     
+                    # Export button
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if st.button("📥 Export Comparison", key="export_comparison"):
+                            try:
+                                export_path = export_comparison_table(comparison_data)
+                                st.success(f"✅ Exported to: {export_path}")
+                            except Exception as e:
+                                st.error(f"Export failed: {get_user_friendly_error_message(e)}")
+                    
                 except Exception as e:
-                    st.error(f"Error fetching fundamental data: {str(e)}")
+                    error_msg = get_user_friendly_error_message(e)
+                    st.error(f"Error fetching fundamental data: {error_msg}")
+                    logger.error(f"Fundamental analysis error: {e}", exc_info=True)
             
             with tab4:
                 st.subheader("💡 Analyst Recommendations")
